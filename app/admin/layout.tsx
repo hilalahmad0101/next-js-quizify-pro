@@ -12,7 +12,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     { name: 'Analytics', icon: 'analytics', href: '/admin/dashboard_v2' },
     { name: 'Questions Bank', icon: 'database', href: '#' },
     { name: 'Quiz Management', icon: 'quiz', href: '/admin/quizzes' },
-    { name: 'Categories', icon: 'category', href: '#' },
+    { name: 'Categories', icon: 'category', href: '/admin/categories' },
   ];
 
   const opsItems = [

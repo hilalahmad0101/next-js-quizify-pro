@@ -15,6 +15,9 @@ export type CategoryInput = z.infer<typeof CategorySchema>;
 export async function getCategories() {
   try {
     const categories = await prisma.category.findMany({
+      include: {
+        _count: { select: { quizzes: true } }
+      },
       orderBy: { createdAt: "desc" },
     });
     return { success: true, data: JSON.parse(JSON.stringify(categories)) };

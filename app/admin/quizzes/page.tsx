@@ -1,207 +1,148 @@
-import React from "react";
+"use client";
 
-export default function Page() {
+import React, { useState, useEffect } from "react";
+import {
+  getQuizzes,
+  deleteQuiz,
+} from "@/app/actions/quizzes";
+import { getCategories } from "@/app/actions/categories";
+import { useConfirm } from "@/components/providers/confirm-provider";
+import Link from "next/link";
+
+interface Quiz {
+  id: string;
+  title: string;
+  description: string | null;
+  image: string | null;
+  duration: number;
+  difficulty: "EASY" | "MEDIUM" | "HARD" | "EXPERT";
+  isPublished: boolean;
+  categoryId: string;
+  category: { name: string };
+  _count: { questions: number };
+  createdAt: string;
+}
+
+export default function QuizzesPage() {
+  const [quizzes, setQuizzes] = useState<Quiz[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const { confirm } = useConfirm();
+
+  const fetchData = async () => {
+    setIsLoading(true);
+    const qRes = await getQuizzes();
+    if (qRes.success && qRes.data) setQuizzes(qRes.data as Quiz[]);
+    setIsLoading(false);
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  const handleDeleteEntry = async (id: string) => {
+    const isConfirmed = await confirm({
+      title: "Collapse Quiz Architecture",
+      message: "Are you certain you want to permanently delete this quiz and all its internal questions? This operation is irreversible.",
+      confirmLabel: "Execute Delete",
+      cancelLabel: "Abort",
+      variant: "danger"
+    });
+
+    if (isConfirmed) {
+      const response = await deleteQuiz(id);
+      if (response.success) {
+        fetchData();
+      }
+    }
+  };
+
   return (
-    <>
-      {/*  TopNavBar Shell  */}
-
-      {/*  Page Content  */}
-      <div className="w-full pt-24 pb-12 px-8 flex gap-8">
-        <div className="flex-1 space-y-10">
-          {/*  Navigation Tabs  */}
-          <div className="flex gap-8 border-b border-outline-variant/10">
-            <button className="pb-4 text-sm font-bold text-primary-container border-b-2 border-primary-container transition-all">
-              Daily
-            </button>
-            <button className="pb-4 text-sm font-medium text-outline hover:text-on-surface transition-all">
-              Weekly
-            </button>
-            <button className="pb-4 text-sm font-medium text-outline hover:text-on-surface transition-all">
-              Challenges
-            </button>
-            <button className="pb-4 text-sm font-medium text-outline hover:text-on-surface transition-all">
-              All Quizzes
-            </button>
-          </div>
-          {/*  Active Quizzes Section  */}
-          <section>
-            <div className="flex items-center justify-between mb-6">
-              <h3 className="text-lg font-headline font-semibold flex items-center gap-2">
-                Active Quizzes
-                <span className="px-2 py-0.5 rounded bg-error/10 text-error text-[10px] font-bold tracking-tighter animate-pulse">
-                  LIVE NOW
-                </span>
-              </h3>
-            </div>
-            {/*  Hero Live Card  */}
-            <div className="relative group overflow-hidden rounded-2xl bg-surface-container-low p-6 flex gap-6 border border-primary-container/10">
-              <div className="absolute top-0 right-0 w-64 h-64 bg-primary-container/5 rounded-full blur-[80px] -mr-32 -mt-32"></div>
-              <div className="w-48 h-32 rounded-xl overflow-hidden bg-surface-container-high relative">
-                <img
-                  alt="Science Quiz"
-                  className="w-full h-full object-cover"
-                  data-alt="microscopic view of glowing colorful cells and DNA structures with cinematic blue and violet lighting"
-                  src="https://lh3.googleusercontent.com/aida-public/AB6AXuBLvFwZCAtrBUwd-3jvSSEY-jd4SSuWlVqE20ZTvM6CPbUaUXqLBnIOGvTp3lmGXsp1FUz4MvEpnqoGfRVAx5R-KP2wo_lGU9SYZ7rzLxFm_eCS8aIA09R0BTWPIYpTkdQ7ak8w1LNo3ACNizU8LcLHPZoNogYc00KtQPGM3RYP6BlQyOVV9S9KS95_-OvQ7CrECFaMVruVgj8BczDh0EF7ufANP7pHfKZ8o7pp99Nnmfp2YC8OyS5E9u8VQPwUlI8dJJ3zWNleUg"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-surface-container-lowest/80 to-transparent"></div>
-                <div className="absolute bottom-2 left-3 flex items-center gap-1">
-                  <span
-                    className="material-symbols-outlined text-xs text-secondary-container"
-                    style={{ fontVariationSettings: "'FILL' 1" }}
-                  >
-                    group
-                  </span>
-                  <span className="text-[10px] font-mono font-bold text-white">
-                    342 Players
-                  </span>
-                </div>
-              </div>
-              <div className="flex-1">
-                <div className="flex justify-between items-start">
-                  <div>
-                    <p className="text-xs font-mono text-primary-fixed uppercase tracking-widest mb-1">
-                      Daily Category
-                    </p>
-                    <h4 className="text-2xl font-headline font-bold text-white leading-tight mb-4">
-                      Daily Science Quiz
-                    </h4>
-                  </div>
-                  <div className="text-right">
-                    <p className="text-xs text-outline mb-1 uppercase tracking-tighter">
-                      Current Prize Pool
-                    </p>
-                    <p className="text-2xl font-mono font-bold text-tertiary">
-                      $500.00
-                    </p>
-                  </div>
-                </div>
-                <div className="grid grid-cols-3 gap-4 border-t border-outline-variant/10 pt-4">
-                  <div>
-                    <p className="text-[10px] text-outline uppercase font-medium">
-                      Revenue Generated
-                    </p>
-                    <p className="text-sm font-mono font-bold text-white">
-                      $684.00
-                    </p>
-                  </div>
-                  <div>
-                    <p className="text-[10px] text-outline uppercase font-medium">
-                      Time Remaining
-                    </p>
-                    <p className="text-sm font-mono font-bold text-secondary-container">
-                      04:22:15
-                    </p>
-                  </div>
-                  <div className="flex justify-end items-center gap-3">
-                    <button className="p-2 rounded-lg bg-surface-variant hover:bg-surface-bright text-on-surface transition-all">
-                      <span className="material-symbols-outlined text-lg">
-                        bar_chart
-                      </span>
-                    </button>
-                    <button className="px-4 py-2 rounded-lg bg-surface-container-highest hover:bg-surface-bright text-white text-xs font-bold transition-all border border-outline-variant/20">
-                      Monitor
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </section>
-          {/*  Scheduled Quizzes Table  */}
-          <section>
-            <h3 className="text-lg font-headline font-semibold mb-6">
-              Scheduled Quizzes
-            </h3>
-            <div className="bg-surface-container-lowest rounded-2xl overflow-hidden border border-outline-variant/5">
-              <table className="w-full text-left border-collapse">
-                <thead>
-                  <tr className="bg-surface-container-low">
-                    <th className="px-6 py-4 text-[10px] font-bold text-outline uppercase tracking-wider">
-                      Quiz Title
-                    </th>
-                    <th className="px-6 py-4 text-[10px] font-bold text-outline uppercase tracking-wider">
-                      Start Time
-                    </th>
-                    <th className="px-6 py-4 text-[10px] font-bold text-outline uppercase tracking-wider">
-                      Entry Fee
-                    </th>
-                    <th className="px-6 py-4 text-[10px] font-bold text-outline uppercase tracking-wider">
-                      Prize
-                    </th>
-                    <th className="px-6 py-4 text-[10px] font-bold text-outline uppercase tracking-wider">
-                      Status
-                    </th>
-                    <th className="px-6 py-4 text-right"></th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-outline-variant/5">
-                  <tr className="hover:bg-surface-container-low/40 transition-colors">
-                    <td className="px-6 py-4">
-                      <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 rounded bg-surface-container-high flex items-center justify-center">
-                          <span className="material-symbols-outlined text-primary text-sm">
-                            history_edu
-                          </span>
-                        </div>
-                        <span className="text-sm font-medium">
-                          World Geography Blitz
-                        </span>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 text-xs font-mono text-outline">
-                      Mar 30, 10:00 AM
-                    </td>
-                    <td className="px-6 py-4 text-xs font-mono">$1.00</td>
-                    <td className="px-6 py-4 text-xs font-mono text-tertiary">
-                      $250
-                    </td>
-                    <td className="px-6 py-4">
-                      <span className="px-2 py-1 rounded-full bg-tertiary/10 text-tertiary text-[10px] font-bold">
-                        SCHEDULED
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 text-right">
-                      <button className="material-symbols-outlined text-outline hover:text-on-surface">
-                        more_vert
-                      </button>
-                    </td>
-                  </tr>
-                  <tr className="hover:bg-surface-container-low/40 transition-colors">
-                    <td className="px-6 py-4">
-                      <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 rounded bg-surface-container-high flex items-center justify-center">
-                          <span className="material-symbols-outlined text-primary text-sm">
-                            movie
-                          </span>
-                        </div>
-                        <span className="text-sm font-medium">
-                          Oscars Special Trivia
-                        </span>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 text-xs font-mono text-outline">
-                      Mar 31, 08:00 PM
-                    </td>
-                    <td className="px-6 py-4 text-xs font-mono">$5.00</td>
-                    <td className="px-6 py-4 text-xs font-mono text-tertiary">
-                      $1,000
-                    </td>
-                    <td className="px-6 py-4">
-                      <span className="px-2 py-1 rounded-full bg-tertiary/10 text-tertiary text-[10px] font-bold">
-                        SCHEDULED
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 text-right">
-                      <button className="material-symbols-outlined text-outline hover:text-on-surface">
-                        more_vert
-                      </button>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </section>
+    <div className="p-8 max-w-[1600px] mx-auto space-y-8 animate-in fade-in duration-700">
+      {/* Header Section */}
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-4 bg-surface-container-low/50 p-8 rounded-[2.5rem] border border-outline-variant/5">
+        <div>
+          <h1 className="text-4xl font-headline font-black text-white tracking-tight uppercase">
+            Quiz <span className="text-secondary-container">Laboratory</span>
+          </h1>
+          <p className="text-on-surface-variant font-body mt-2 max-w-lg">
+            Construct high-stakes intellectual challenges with parameterized durations and difficulty scaling.
+          </p>
         </div>
+        <Link
+          href="/admin/quizzes/create"
+          className="group px-8 py-4 bg-secondary-container rounded-2xl text-sm font-black text-on-secondary-container shadow-[0_8px_30px_rgb(0,229,160,0.3)] hover:shadow-[0_8px_40px_rgb(0,229,160,0.5)] hover:-translate-y-1 active:translate-y-0 transition-all flex items-center gap-3"
+        >
+          <span className="material-symbols-outlined text-[20px]">science</span>
+          <span>Deploy New Experiment</span>
+        </Link>
       </div>
-    </>
+
+      {/* Grid List */}
+      {isLoading ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {[1,2,3].map(n => (
+             <div key={n} className="h-64 bg-surface-container-low animate-pulse rounded-3xl" />
+          ))}
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {quizzes.length === 0 && (
+            <div className="col-span-full py-32 glass-panel rounded-[3rem] border-dashed border-2 flex flex-col items-center justify-center opacity-40">
+                <span className="material-symbols-outlined text-6xl mb-4">analytics</span>
+                <p className="font-headline font-black uppercase tracking-widest text-sm">No quizzes initialized in this sector</p>
+            </div>
+          )}
+          {quizzes.map((quiz) => (
+            <div key={quiz.id} className="glass-panel rounded-[2rem] p-6 group transition-all hover:border-secondary-container/30 relative">
+               <div className="flex justify-between items-start mb-6">
+                 <div className="space-y-1">
+                   <div className="flex items-center gap-2">
+                     <span className={`w-2 h-2 rounded-full ${quiz.isPublished ? "bg-secondary shadow-[0_0_10px_#6cffbf]" : "bg-outline/30"}`}></span>
+                     <span className="text-[10px] font-black uppercase tracking-widest text-outline">
+                       {quiz.isPublished ? "ACTIVE PROTOCOL" : "DRAFT STATE"}
+                     </span>
+                   </div>
+                   <h3 className="text-xl font-headline font-black text-white uppercase tracking-tighter line-clamp-1">{quiz.title}</h3>
+                 </div>
+                 <div className="flex gap-2">
+                    <Link href={`/admin/quizzes/${quiz.id}`} title="View Details" className="w-9 h-9 rounded-xl bg-surface-container-high flex items-center justify-center text-outline hover:text-secondary-container transition-colors">
+                        <span className="material-symbols-outlined text-[18px]">visibility</span>
+                    </Link>
+                    <Link href={`/admin/quizzes/${quiz.id}/edit`} title="Edit Architecture" className="w-9 h-9 rounded-xl bg-surface-container-high flex items-center justify-center text-outline hover:text-white transition-colors">
+                        <span className="material-symbols-outlined text-[18px]">edit_note</span>
+                    </Link>
+                    <button onClick={() => handleDeleteEntry(quiz.id)} title="Delete Quiz" className="w-9 h-9 rounded-xl bg-surface-container-high/50 flex items-center justify-center text-outline hover:text-error transition-colors">
+                       <span className="material-symbols-outlined text-[18px]">delete</span>
+                    </button>
+                 </div>
+               </div>
+
+               <div className="flex flex-wrap gap-2 mb-6">
+                  <span className="px-3 py-1 rounded-lg bg-primary-container/10 border border-primary-container/20 text-primary-container text-[10px] font-black uppercase tracking-widest">
+                    {quiz.category.name}
+                  </span>
+                  <span className="px-3 py-1 rounded-lg bg-tertiary/10 border border-tertiary/20 text-tertiary text-[10px] font-black uppercase tracking-widest">
+                    {quiz.difficulty}
+                  </span>
+                  <span className="px-3 py-1 rounded-lg bg-surface-container-highest text-white text-[10px] font-black uppercase tracking-widest">
+                    {quiz.duration} MINS
+                  </span>
+               </div>
+
+               <div className="pt-6 border-t border-outline-variant/10 flex justify-between items-center text-on-surface-variant">
+                  <div className="flex items-center gap-2">
+                    <span className="material-symbols-outlined text-[16px]">quiz</span>
+                    <span className="text-xs font-bold uppercase tracking-widest">{quiz._count.questions} Units</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="material-symbols-outlined text-[16px]">history</span>
+                    <span className="text-[10px] font-mono opacity-50 uppercase">{new Date(quiz.createdAt).toLocaleDateString()}</span>
+                  </div>
+               </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
   );
 }

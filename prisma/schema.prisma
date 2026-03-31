@@ -18,6 +18,64 @@ model Category {
   description String   @db.Text
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+  quizzes     Quiz[]
 
   @@map("categories")
+}
+
+model Quiz {
+  id           String     @id @default(cuid())
+  title        String
+  description  String?    @db.Text
+  image        String?    @db.Text
+  duration     Int        @default(15) // in minutes
+  totalMarks   Int        @default(0)
+  difficulty   Difficulty @default(EASY)
+  isPublished  Boolean    @default(false)
+  
+  categoryId   String
+  category     Category   @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  
+  questions    Question[]
+  
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+
+  @@map("quizzes")
+}
+
+model Question {
+  id          String   @id @default(cuid())
+  text        String   @db.Text
+  image       String?  @db.Text
+  explanation String?  @db.Text
+  marks       Int      @default(1)
+  
+  quizId      String
+  quiz        Quiz     @relation(fields: [quizId], references: [id], onDelete: Cascade)
+  
+  options     Option[]
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("questions")
+}
+
+model Option {
+  id         String   @id @default(cuid())
+  text       String
+  isCorrect  Boolean  @default(false)
+  
+  questionId String
+  question   Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+
+  @@map("options")
+}
+
+enum Difficulty {
+  EASY
+  MEDIUM
+  HARD
+  EXPERT
 }

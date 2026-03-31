@@ -10,7 +10,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const navItems = [
     { name: 'Dashboard', icon: 'dashboard', href: '/admin/dashboard' },
     { name: 'Analytics', icon: 'analytics', href: '/admin/dashboard_v2' },
-    { name: 'Questions Bank', icon: 'database', href: '#' },
+    { name: 'Questions Bank', icon: 'database', href: '/admin/questions' },
     { name: 'Quiz Management', icon: 'quiz', href: '/admin/quizzes' },
     { name: 'Categories', icon: 'category', href: '/admin/categories' },
   ];

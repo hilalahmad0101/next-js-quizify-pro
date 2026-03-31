@@ -186,8 +186,11 @@ export default function CategoriesPage() {
                   "{category.description}"
                 </p>
                 <div className="pt-6 flex justify-between items-center border-t border-outline-variant/10">
-                  <div className="flex items-center gap-2">
-                      <div className="w-1.5 h-1.5 bg-secondary rounded-full animate-pulse shadow-[0_0_8px_rgba(180,180,255,0.5)]"></div>
+                  <div className="flex items-center gap-3">
+                      <div className="flex items-center gap-1.5 bg-secondary/10 px-2 py-0.5 rounded-lg">
+                        <div className="w-1 h-1 bg-secondary rounded-full animate-pulse"></div>
+                        <span className="text-[9px] font-black text-secondary uppercase tracking-widest">{(category as any)._count.quizzes} EXPs</span>
+                      </div>
                       <span className="text-[10px] font-black text-outline uppercase tracking-[0.2em]">Ready</span>
                   </div>
                   <span className="text-[10px] font-black text-secondary font-mono tracking-widest bg-secondary/10 px-2 py-1 rounded-lg">SEG-{category.id.slice(-4).toUpperCase()}</span>

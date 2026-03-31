@@ -7,6 +7,7 @@ import {
   updateCategory,
   deleteCategory,
 } from "@/app/actions/categories";
+import { useConfirm } from "@/components/providers/confirm-provider";
 
 interface Category {
   id: string;
@@ -80,8 +81,18 @@ export default function CategoriesPage() {
     });
   };
 
+  const { confirm } = useConfirm();
+
   const handleDeleteEntry = async (id: string) => {
-    if (confirm("Are you sure you want to delete this category?")) {
+    const isConfirmed = await confirm({
+      title: "Decommission Segment",
+      message: "Are you certain you want to permanently delete this segment? This action will collapse all associated visual assets and metadata within the core architecture.",
+      confirmLabel: "Execute Delete",
+      cancelLabel: "Abort Mission",
+      variant: "danger"
+    });
+
+    if (isConfirmed) {
       const response = await deleteCategory(id);
       if (response.success) {
         fetchCategories();

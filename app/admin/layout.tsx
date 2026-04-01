@@ -52,7 +52,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           ))}
           
           <div className="py-4 px-6 text-[10px] text-slate-600 font-bold uppercase tracking-[0.2em]">Support</div>
-          <Link href="#" className="text-slate-400 hover:text-white flex items-center gap-3 px-6 py-3 transition-all font-headline text-sm tracking-tight hover:bg-[#1B1B25]">
+          <Link href="/admin/announcements" className={`flex items-center gap-3 px-6 py-3 transition-all font-headline text-sm tracking-tight ${pathname === '/admin/announcements' ? 'text-white bg-[#6C3EFF]/20 border-r-2 border-[#6C3EFF] font-semibold' : 'text-slate-400 hover:text-white hover:bg-[#1B1B25]'}`}>
             <span className="material-symbols-outlined">campaign</span>
             Announcements
           </Link>
